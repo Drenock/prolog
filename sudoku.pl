@@ -17,6 +17,11 @@ are_different_digits(A) :-
   are_digits(A),
   are_different(A).
 
+all_empty([]).
+all_empty([ROW | ROWS]) :-
+  length(ROW, 0),
+  all_empty(ROWS).
+
 %  --------------------------------------------------------------------------
 
 valid_grid(ROWS) :-
@@ -30,16 +35,22 @@ valid_rows([ROW | ROWS]) :-
 
 valid_row(ROW) :- length(ROW, 9), are_different_digits(ROW).
 
-get_col([], TEMP, TEMP).
+% stop
+get_cols(EMPTY_ROWS, [], [], RESULT, RESULT) :-
+  all_empty(EMPTY_ROWS).
 
-get_col([[ELEMENT | _] | ROWS], [], COL) :-
-  append([ELEMENT], [], RESULT),
-  get_col(ROWS, RESULT, COL).
+% next col
+get_cols([], TRIMMED_ROWS, FINISHED_TEMP_COL, CURRENT_TEMP_COLS, RESULT) :-
+  append([FINISHED_TEMP_COL], CURRENT_TEMP_COLS, NEXT_TEMP_COLS),
+  get_cols(TRIMMED_ROWS, [], [], NEXT_TEMP_COLS, RESULT).
 
-get_col([[ELEMENT | _] | ROWS], TEMP, COL) :-
-  not(length(TEMP, 0)),
-  append([ELEMENT], TEMP, RESULT),
-  get_col(ROWS, RESULT, COL).
+% process col
+get_cols([[ELEMENT | ROW] | ROWS], CURRENT_TRIMMED_ROWS, CURRENT_TEMP_COL, TEMP_COLS, RESULT) :-
+  append([ELEMENT], CURRENT_TEMP_COL, NEXT_TEMP_COL),
+  append([ROW], CURRENT_TRIMMED_ROWS, NEXT_TRIMMED_ROWS),
+  get_cols(ROWS, NEXT_TRIMMED_ROWS, NEXT_TEMP_COL, TEMP_COLS, RESULT).
+
+get_cols(ROWS, RESULT) :- get_cols(ROWS, [], [], [], RESULT).
 
 sudoku(ROWS) :- valid_grid(ROWS).
 
