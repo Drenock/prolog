@@ -71,7 +71,7 @@ solve([A, B, C, D, E, F | T]) :-
 % ____
 % ONZE
 
-test(COUNT) :- aggregate_all(count, play(N, D, O, E, U, Z, F, X), COUNT).
+play(COUNT) :- aggregate_all(count, play(N, D, O, E, U, Z, F, X), COUNT).
 
 play(N, D, O, E, U, Z, F, X) :-
   are_different_digits([N, D, O, E, U, Z, F, X]),
